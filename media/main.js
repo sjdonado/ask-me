@@ -1,5 +1,3 @@
-console.log('LOADED!');
-
 function message(text) {
     const el = document.createElement('span');
     el.className = 'message';
@@ -9,7 +7,10 @@ function message(text) {
 }
 
 function send() {
+    const vscode = acquireVsCodeApi();
     const question = document.getElementById('question');
-    console.log(question.innerHTML, question.innerText, question.textContent);
-    document.getElementById('chat').appendChild(message('test'));
+    vscode.postMessage({
+        command: "question-asked",
+        text: question.value
+    });
 }
