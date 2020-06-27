@@ -1,6 +1,6 @@
 import spacy
 import re
-nlp = spacy.load("en_core_web_sm")
+NLP = spacy.load("en_core_web_sm")
 
 from tqdm import tqdm
 from itertools import islice
