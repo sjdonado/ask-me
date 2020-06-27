@@ -1,0 +1,15 @@
+.container {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat {
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+}

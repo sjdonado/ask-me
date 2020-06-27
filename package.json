@@ -10,14 +10,27 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:ask-me.helloWorld"
+		"onCommand:ask-me.start",
+        "onCommand:ask-me.python",
+        "onCommand:ask-me.javascript"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "ask-me.helloWorld",
-                "title": "Hello World"
+				"command": "ask-me.start",
+				"title": "Auto",
+				"category": "Ask me"
+			},
+			{
+				"command": "ask-me.python",
+				"title": "Python",
+				"category": "Ask me"
+			},
+			{
+				"command": "ask-me.javascript",
+				"title": "Javascript",
+				"category": "Ask me"
 			}
 		]
 	},
