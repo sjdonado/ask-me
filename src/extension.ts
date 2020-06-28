@@ -9,7 +9,7 @@ import { GET_QUESTION } from "./queries";
 import { Message, Question, Response } from "./types";
 import { API_URL } from './config';
 import { evaluate } from "./services/mathjs";
-
+  
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("ask-me.start", () => {
@@ -106,29 +106,29 @@ class WebViewPanel {
             vscode.window.showErrorMessage(message.text);
             return;
           case "question-asked":
-            evaluate("12 + sqrt(3.1442)").then(console.log);
             newMessage('sent', message.text);
-
-            // messages.push({ type: 'received', text: 'HI!' });
-            const { data } = await axios.post<Response,AxiosResponse<Response>>(API_URL, {
-              query: print(GET_QUESTION),
-              variables: {
-                uid: "ARRAY_SORTING",
-              },
-            });
-
-            if (data.data.questions.length === 0) {
-                newMessage('received', 'Question not found, try again');
-                return;
+            if (message.isMath) {
+              const response = await evaluate(message.text);
+              newMessage('response', response);
+            } else {
+              const { data } = await axios.post<Response,AxiosResponse<Response>>(API_URL, {
+                query: print(GET_QUESTION),
+                variables: {
+                  uid: "ARRAY_SORTING",
+                },
+              });
+  
+              if (data.data.questions.length === 0) {
+                newMessage('response', 'Question not found, try again');
+              } else {
+                console.log(data.data.questions);
+                const { title, description, url } = data.data.questions[0].information[0] as any;
+                
+                // TODO map function
+                newMessage('response', `${title} <br> ${description}`);
+                newMessage('response', `For futher information: ${url}`);
+              }
             }
-
-            console.log(data.data.questions);
-
-            const { title, description, url } = data.data.questions[0].information[0] as any;
-            
-            // TODO map function
-            newMessage('received', `${title} <br> ${description}`);
-            newMessage('received', `For futher information: ${url}`);
 
             this._panel.webview.html = this._getHtmlForWebview(messages);
             return;

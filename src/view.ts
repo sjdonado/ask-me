@@ -26,6 +26,7 @@ export default ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Ask me 🤖</title>
       <link rel="stylesheet" type="text/css" href="${stylesUri}">
+      <script src="https://unpkg.com/complex-js@5.0.0/dst/complex.min.js"></script>
   </head>
   <body>
       <div class="header">
