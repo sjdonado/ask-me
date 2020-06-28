@@ -59,12 +59,12 @@ body {
   color: var(--vscode-foreground);
 }
 
-.response > .title {
+.response .title {
   font-weight: bold;
   color: var(--vscode-foreground);
 }
 
-.response > .title > a {
+.response .title > a {
   text-decoration: none;
 }
 

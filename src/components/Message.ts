@@ -31,6 +31,8 @@ export class MessageRequest extends Message {
   }
 }
 
+// RESPONSES
+
 export class TextMessageResponse extends Message {
   constructor(public text: String) {
     super(new Date());
@@ -83,7 +85,11 @@ export class ReferenceLinkMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
+      <div>Here is a recommended link: 
+        <span class="title">
+          <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
+        </span>
+      </div>
       <span class="time">${this.localeTime}</span>
     </div>`;
   }
