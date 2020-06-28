@@ -26,8 +26,8 @@ COPY config/requirements.txt /opt/ml/input/config/requirements.txt
 RUN pip install -r /opt/ml/input/config/requirements.txt 
 RUN pip install gevent
 RUN pip install -U flask-cors
-RUN python -m nltk.downloader punkt 
-RUN python -m nltk.downloader wordnet 
+RUN python -m nltk.downloader punkt -d /miniconda/nltk_data
+RUN python -m nltk.downloader wordnet -d /miniconda/nltk_data
 # Copy src
 COPY flask_app /opt/ml/code
 
