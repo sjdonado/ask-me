@@ -6,8 +6,9 @@ import { print } from "graphql";
 import view from "./view";
 
 import { GET_QUESTION } from "./queries";
-
 import { Message, Question } from "./types";
+
+import { evaluate } from "./services/mathjs";
 
 interface Response {
   data: {
@@ -107,8 +108,10 @@ class WebViewPanel {
             vscode.window.showErrorMessage(message.text);
             return;
           case "question-asked":
+            evaluate("12 + sqrt(3.1442)").then(console.log);
+
             messages.push({ type: "sent", text: message.text, time: "11:30" });
-            
+
             // messages.push({ type: 'received', text: 'HI!' });
             const { data } = await axios.post<
               Response,

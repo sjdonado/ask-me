@@ -7,12 +7,12 @@ interface Response {
   error?: string;
 }
 
-export const query = async (expr: string) => {
-  const { data } = await axios.post<Response>(BASE, { expr });
+export const evaluate = async (expr: string) => {
+  const { data } = await axios.post<Response>(BASE, { expr, precision: 3 });
 
   if (data.error) {
     return "Oops. Too dificult! 😩";
   }
 
-  return data.result as string;
+  return `Easy! It's ${data.result as string} 🤓`;
 };
