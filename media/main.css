@@ -79,8 +79,9 @@ a {
   border-radius: 3px;
 }
 
-.response .code {
-  overflow-x: scroll;
+.response .code,
+.response .text {
+  overflow-x: auto;
 }
 
 .response > .button {
