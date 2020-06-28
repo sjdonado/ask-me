@@ -7,50 +7,51 @@ export enum MessageType {
 }
 
 export interface Tag {
-  id: String;
-  name: String;
+  id: string;
+  name: string;
 }
 
 export interface Question {
-  id: String;
-  title: String;
-  uid: String;
+  id: string;
+  title: string;
+  uid: string;
   tags: Array<Tag>;
   information: Information;
 }
 
 interface UploadFile {
-  url: String;
+  url: string;
 }
 
 interface Component {
-  __typename: String;
-  id: String;
-  url: String;
+  __typename: string;
+  id: string;
+  url: string;
 }
 
 export interface ComponentResponseCodeSnippet extends Component {
-  title: String;
-  description: String;
-  code: String;
+  title: string;
+  description: string;
+  code: string;
 }
 
 export interface ComponentResponseImage extends Component {
-  title: String;
+  title: string;
   image: UploadFile;
 }
 
 export interface ComponentResponseInformationSnippet extends Component {
-  title: String;
-  description: String;
+  title: string;
+  description: string;
 }
 
 export interface ComponentResponseReferenceLink extends Component {
-  title: String;
+  title: string;
 }
 
 export interface ComponentResponseYoutubeVideo extends Component {
-  title: String;
+  videoTitle: string;
+  videoUrl: string;
 }
 
 export type Components =
