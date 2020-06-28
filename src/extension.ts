@@ -7,23 +7,7 @@ import view from "./view";
 
 import { GET_QUESTION } from "./queries";
 
-interface Message {
-  type: string;
-  text: string;
-}
-
-interface Tag {
-  id: String;
-  name: String;
-}
-
-interface Question {
-  id: String;
-  title: String;
-  uid: String;
-  tags: Array<Tag>;
-  information: any;
-}
+import { Message, Question } from "./types";
 
 interface Response {
   data: {
@@ -123,7 +107,8 @@ class WebViewPanel {
             vscode.window.showErrorMessage(message.text);
             return;
           case "question-asked":
-            messages.push({ type: "sent", text: message.text });
+            messages.push({ type: "sent", text: message.text, time: "11:30" });
+            
             // messages.push({ type: 'received', text: 'HI!' });
             const { data } = await axios.post<
               Response,
@@ -145,10 +130,13 @@ class WebViewPanel {
             messages.push({
               type: "received",
               text: `${title} <br> ${description}`,
+              time: "12:30",
             });
+
             messages.push({
               type: "received",
               text: `For futher information: ${url}`,
+              time: "11:40",
             });
 
             this._panel.webview.html = this._getHtmlForWebview(messages);
