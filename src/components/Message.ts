@@ -89,7 +89,7 @@ export class ImageMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <img src="${API_BASE + this.messagePayload.image.url}" width="100%" />
+      <img src="${this.messagePayload.image.url}" width="100%" />
 
       ${seeMore(this.messagePayload.url)}
       ${time(this.localeTime)}

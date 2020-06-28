@@ -1,8 +1,9 @@
 {
 	"name": "ask-me",
 	"displayName": "Ask me",
-	"description": "Ask me about code fundamentals",
+	"description": "Your smart assistant for coding",
 	"version": "0.0.1",
+	"repository": "https://github.com/sjdonado/ask-me",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
@@ -40,11 +41,11 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn run compile",
+		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile && yarn run lint",
+		"pretest": "npm run compile && yarn run lint",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
@@ -63,7 +64,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.19.2",
-		"graphql": "^15.1.0",
+		"graphql": "^14.0.0",
 		"graphql-tag": "^2.10.3",
 		"highlight.js": "^10.1.1",
 		"markdown-it": "^11.0.0"
