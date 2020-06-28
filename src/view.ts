@@ -1,12 +1,5 @@
 import { Uri } from "vscode";
-import {
-  MessageRequest,
-  InformationMessageResponse,
-  ImageMessageResponse,
-  ReferenceLinkMessageResponse,
-  TextMessageResponse,
-  Message,
-} from "./components/Message";
+import { Message } from "./components/Message";
 
 export default ({
   stylesUri,
@@ -27,12 +20,14 @@ export default ({
     })
     .join("");
 
+  const title = 'Ask me 🤖';
+
   return `<!DOCTYPE html>
   <html lang="en">
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Ask me 🤖</title>
+      <title>${title}</title>
       <link rel="stylesheet" type="text/css" href="${stylesUri}">
       <link rel="stylesheet" type="text/css" href="${vs2015}">
       <link rel="stylesheet" href="https://cdn.plyr.io/3.6.2/plyr.css" />
@@ -40,7 +35,7 @@ export default ({
   </head>
   <body>
       <div class="header">
-          <h1>Ask me 🤖</h1>
+          <h1>${title}</h1>
           <h4>Your smart assistant for coding</h4>
       </div>
       <div class="container">

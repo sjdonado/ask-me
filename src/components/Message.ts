@@ -47,7 +47,6 @@ export class MessageRequest extends Message {
 }
 
 // RESPONSES
-
 const time = (localeTime: String) => `<span class="time">${localeTime}</span>`;
 
 const seeMore = (url: string) =>
@@ -146,6 +145,7 @@ export class CodeSnippetMessageResponse extends Message {
       <div class="code">
         ${md.render(this.messagePayload.code)}
       </div>
+      <button type="button" class="button copy-to-editor">Copy to editor</button>
 
       ${seeMore(this.messagePayload.url)}
       ${time(this.localeTime)}
