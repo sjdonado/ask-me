@@ -2,6 +2,10 @@ body {
   height: 97vh;
 }
 
+a {
+  text-decoration: none !important;
+}
+
 .header > h1 {
   color: var(--vscode-foreground);
   margin-bottom: 6px;
@@ -57,6 +61,7 @@ body {
   background: var(--vscode-textCodeBlock-background);
   border-color: var(--vscode-textCodeBlock-background);
   color: var(--vscode-foreground);
+  padding: 5px;
 }
 
 .response .title {
@@ -71,6 +76,23 @@ body {
 
 .response > img {
   margin-top: 5px;
+  border-radius: 3px;
+}
+
+.response .code {
+  overflow-x: scroll;
+}
+
+.response > a.button {
+  cursor: pointer;
+  margin-top: 5px;
+  padding: 0px 5px;
+  border-radius: 4px;
+  background: var(--vscode-button-background);
+  border-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  width: 80px;
+  text-align: center;
 }
 
 .response > .time {
