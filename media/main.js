@@ -1,13 +1,24 @@
-function send() {
-    const vscode = acquireVsCodeApi();
-    if (question.value.length > 0) {
-        vscode.postMessage({
-            command: 'question-asked',
-            text: question.value
-        });
-    }
+function isMathExpression(str) {
+  try {
+    Complex.compile(str);
+  } catch (error) {
+    return false;
+  }
+
+  return true;
 }
 
-window.onload = function() {
-    document.getElementById('question').focus();
+function send() {
+  const vscode = acquireVsCodeApi();
+  if (question.value.length > 0) {
+    vscode.postMessage({
+      command: "question-asked",
+      text: question.value,
+      isMath: isMathExpression(question.value),
+    });
+  }
+}
+
+window.onload = function () {
+  document.getElementById("question").focus();
 };

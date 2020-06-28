@@ -1,4 +1,12 @@
 import { Uri } from "vscode";
+import {
+  MessageRequest,
+  InformationMessageResponse,
+  ImageMessageResponse,
+  ReferenceLinkMessageResponse,
+  TextMessageResponse,
+  Message,
+} from "./components/Message";
 
 export default ({
   stylesUri,
@@ -6,27 +14,31 @@ export default ({
   scriptUri,
 }: {
   stylesUri: Uri;
-  messages: Array<{ type: String; text: String }>;
+  messages: Array<Message>;
   scriptUri: Uri;
 }) => {
+  const messagesComponents = messages
+    .map((message) => message.toHtml())
+    .join("");
+
   return `<!DOCTYPE html>
   <html lang="en">
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Ask me</title>
+      <title>Ask me 🤖</title>
       <link rel="stylesheet" type="text/css" href="${stylesUri}">
+      <script src="https://unpkg.com/complex-js@5.0.0/dst/complex.min.js"></script>
   </head>
   <body>
       <div class="header">
-          <h1>Welcome to Ask me :)</h1>
+          <h1>Welcome to Ask me 🤖</h1>
+          <span>Ask me about code fundamentals</span>
       </div>
       <div class="container">
-          <div id="chat">${messages
-            .map((msg) => `<p class="message ${msg.type}">${msg.text}</p>`)
-            .join("")}</div>
+          <div id="chat">${messagesComponents}</div>
           <form class="question-form" onsubmit="send()">
-              <input id="question" type="text" placeholder="Type your question">
+              <input id="question" type="text" placeholder="Type your question...">
               <button type="submit">Send</button>
           </form>
       </div>

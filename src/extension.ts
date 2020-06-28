@@ -6,30 +6,15 @@ import { print } from "graphql";
 import view from "./view";
 
 import { GET_QUESTION } from "./queries";
-
-interface Message {
-  type: string;
-  text: string;
-}
-
-interface Tag {
-  id: String;
-  name: String;
-}
-
-interface Question {
-  id: String;
-  title: String;
-  uid: String;
-  tags: Array<Tag>;
-  information: any;
-}
-
-interface Response {
-  data: {
-    questions: Array<Question>;
-  };
-}
+import { Response, Question } from "./types";
+import { API_URL } from "./config";
+import { evaluate } from "./services/mathjs";
+import {
+  Message,
+  MessageRequest,
+  TextMessageResponse,
+} from "./components/Message";
+import { parseQuestion } from "./utils";
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -66,11 +51,11 @@ class WebViewPanel {
       : undefined;
 
     let detectedLanguage: string = language;
-    if (language === "auto" && vscode.window.activeTextEditor) {
+    if (language === "Auto" && vscode.window.activeTextEditor) {
       detectedLanguage = vscode.window.activeTextEditor.document.languageId;
     }
 
-    if (detectedLanguage === "auto") {
+    if (detectedLanguage === "Auto") {
       vscode.window.showErrorMessage("Language not found");
       return;
     }
@@ -84,7 +69,7 @@ class WebViewPanel {
     const panel = vscode.window.createWebviewPanel(
       WebViewPanel.viewType,
       `Ask me: ${language}`,
-      column || vscode.ViewColumn.One,
+      column || vscode.ViewColumn.Two,
       {
         // Enable javascript in the webview
         enableScripts: true,
@@ -104,7 +89,7 @@ class WebViewPanel {
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionPath: string) {
-    const messages: Message[] = [];
+    const messages: Array<Message> = [];
     this._panel = panel;
     this._extensionPath = extensionPath;
 
@@ -115,6 +100,8 @@ class WebViewPanel {
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
+    const newMessage = (message: Message) => messages.push(message);
+
     // Handle messages from the webview
     this._panel.webview.onDidReceiveMessage(
       async (message) => {
@@ -122,34 +109,33 @@ class WebViewPanel {
           case "alert":
             vscode.window.showErrorMessage(message.text);
             return;
+
           case "question-asked":
-            messages.push({ type: "sent", text: message.text });
-            // messages.push({ type: 'received', text: 'HI!' });
-            const { data } = await axios.post<
-              Response,
-              AxiosResponse<Response>
-            >("https://d2fc6a9754a5.ngrok.io/graphql", {
-              query: print(GET_QUESTION),
-              variables: {
-                uid: "ARRAY_SORTING",
-              },
-            });
+            newMessage(new MessageRequest(message.text));
 
-            console.log("data", data);
+            if (message.isMath) {
+              const response = await evaluate(message.text);
+              newMessage(new TextMessageResponse(response));
+            } else {
+              const { data } = await axios.post<Response>(API_URL, {
+                query: print(GET_QUESTION),
+                variables: {
+                  uid: "ARRAY_SORTING",
+                },
+              });
 
-            // TODO: Verify that questions array is not empy
+              if (data.data.questions.length === 0) {
+                newMessage(
+                  new TextMessageResponse("Question not found, try again")
+                );
+              } else {
+                console.log(data.data.questions);
 
-            const { title, description, url } = data.data.questions[0]
-              .information[0] as any;
-            // TODO map function
-            messages.push({
-              type: "received",
-              text: `${title} <br> ${description}`,
-            });
-            messages.push({
-              type: "received",
-              text: `For futher information: ${url}`,
-            });
+                parseQuestion(
+                  data.data.questions[0] as Question
+                ).map((message) => newMessage(message));
+              }
+            }
 
             this._panel.webview.html = this._getHtmlForWebview(messages);
             return;
