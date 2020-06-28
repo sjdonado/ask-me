@@ -36,7 +36,7 @@ class Bot:
             cls.artifacts[name] = json.load(file_artifact)
         else:
           cls.artifacts["chatbot_model"] = Sequential()
-          cls.artifacts["chatbot_model"].add(Dense(128, input_shape=(53,), activation='relu'))
+          cls.artifacts["chatbot_model"].add(Dense(128, input_shape=(64,), activation='relu'))
           cls.artifacts["chatbot_model"].add(Dropout(0.5))
           cls.artifacts["chatbot_model"].add(Dense(64, activation='relu'))
           cls.artifacts["chatbot_model"].add(Dropout(0.5))
@@ -100,7 +100,7 @@ class Match:
   @classmethod
   def predict_match(cls,msg):
     fse_model, db_data, bigrams = cls.get_artifacts()
-    msg = preprocess_data(msg, cls.regex, False, False)
+    msg = preprocess_data(msg, cls.regex, False, True)
     msg_transform = list(bigrams[msg])
     query_embeddings = fse_model.infer([(msg_transform,0)])
     distances = cdist(query_embeddings, db_data["data_embeddings"], "cosine")[0]
