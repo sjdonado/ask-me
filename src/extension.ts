@@ -19,9 +19,9 @@ import {
 import { parseQuestion } from "./utils";
 
 const languages = {
-  "Auto": "auto",
-  "Python": "py",
-  "Javascript": "js"
+  Auto: "auto",
+  Python: "py",
+  Javascript: "js",
 };
 
 const types = [
@@ -61,7 +61,10 @@ class WebViewPanel {
   private readonly _extensionPath: string;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionPath: string, language: keyof typeof languages) {
+  public static createOrShow(
+    extensionPath: string,
+    language: keyof typeof languages
+  ) {
     const column = vscode.ViewColumn.Two;
 
     let detectedLanguage: keyof typeof languages = language;
@@ -102,15 +105,31 @@ class WebViewPanel {
       }
     );
 
-    WebViewPanel.currentPanel = new WebViewPanel(panel, extensionPath, detectedLanguage);
+    WebViewPanel.currentPanel = new WebViewPanel(
+      panel,
+      extensionPath,
+      detectedLanguage
+    );
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionPath: string, language: keyof typeof languages) {
-    WebViewPanel.currentPanel = new WebViewPanel(panel, extensionPath, language);
+  public static revive(
+    panel: vscode.WebviewPanel,
+    extensionPath: string,
+    language: keyof typeof languages
+  ) {
+    WebViewPanel.currentPanel = new WebViewPanel(
+      panel,
+      extensionPath,
+      language
+    );
   }
 
-  private constructor(panel: vscode.WebviewPanel, extensionPath: string, language: keyof typeof languages) {
-    const messages: Array<Message> = [];
+  private constructor(
+    panel: vscode.WebviewPanel,
+    extensionPath: string,
+    language: keyof typeof languages
+  ) {
+    let messages: Array<Message> = [];
     this._panel = panel;
     this._extensionPath = extensionPath;
 
@@ -133,21 +152,28 @@ class WebViewPanel {
           case "alert":
             vscode.window.showErrorMessage(message.data);
             return;
-
           case "open-in-editor":
-            if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-              const newFile = vscode.Uri.parse("untitled:" + path.join(vscode.workspace.workspaceFolders[0].uri.path, `example.${languages[language]}`));
-              vscode.workspace.openTextDocument(newFile)
-                .then(document => {
-                  const edit = new vscode.WorkspaceEdit();
-                  edit.insert(newFile, new vscode.Position(0, 0), message.data);
-                  return vscode.workspace.applyEdit(edit).then(success => {
-                      if (success) {
-                        vscode.window.showTextDocument(document);
-                      } else {
-                        vscode.window.showInformationMessage("Error!");
-                      }
-                  });
+            if (
+              vscode.workspace.workspaceFolders &&
+              vscode.workspace.workspaceFolders.length > 0
+            ) {
+              const newFile = vscode.Uri.parse(
+                "untitled:" +
+                  path.join(
+                    vscode.workspace.workspaceFolders[0].uri.path,
+                    `example.${languages[language]}`
+                  )
+              );
+              vscode.workspace.openTextDocument(newFile).then((document) => {
+                const edit = new vscode.WorkspaceEdit();
+                edit.insert(newFile, new vscode.Position(0, 0), message.data);
+                return vscode.workspace.applyEdit(edit).then((success) => {
+                  if (success) {
+                    vscode.window.showTextDocument(document);
+                  } else {
+                    vscode.window.showInformationMessage("Error!");
+                  }
+                });
               });
             } else {
               vscode.window.showErrorMessage("Workspace not found");
@@ -164,13 +190,16 @@ class WebViewPanel {
               async (progress) => {
                 try {
                   newMessage(new MessageRequest(message.data));
-  
-                  if (message.isMath) {
+
+                  if (message.data.trim() === "clear") {
+                    messages = [];
+                    newMessage(new TextMessageResponse("Hi! 👀"));
+                  } else if (message.isMath) {
                     const response = await evaluate(message.data);
                     newMessage(new TextMessageResponse(response));
                   } else {
                     const response = await queryBot(message.data);
-  
+
                     if (types.includes(response)) {
                       const { data } = await axios.post<Response>(API_URL, {
                         query: print(GET_QUESTION),
@@ -178,7 +207,7 @@ class WebViewPanel {
                           uid: response,
                         },
                       });
-  
+
                       if (data.data.questions.length === 0) {
                         newMessage(
                           new TextMessageResponse(
@@ -187,9 +216,11 @@ class WebViewPanel {
                         );
                       } else {
                         newMessage(
-                          new TextMessageResponse("Heeey! Let me teach you 😎😛")
+                          new TextMessageResponse(
+                            "Heeey! Let me teach you 😎😛"
+                          )
                         );
-  
+
                         parseQuestion(data.data.questions[0]).map((message) =>
                           newMessage(message)
                         );
@@ -198,11 +229,11 @@ class WebViewPanel {
                       newMessage(new TextMessageResponse(response));
                     }
                   }
-  
+
                   progress.report({ increment: 0 });
-  
+
                   this._panel.webview.html = this._getHtmlForWebview(messages);
-                } catch(err) {
+                } catch (err) {
                   vscode.window.showErrorMessage(err.message);
                 }
               }
