@@ -134,7 +134,7 @@ class WebViewPanel {
             vscode.window.showErrorMessage(message.data);
             return;
 
-          case "copy-to-editor":
+          case "open-in-editor":
             if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
               const newFile = vscode.Uri.parse("untitled:" + path.join(vscode.workspace.workspaceFolders[0].uri.path, `example.${languages[language]}`));
               vscode.workspace.openTextDocument(newFile)

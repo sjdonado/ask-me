@@ -145,7 +145,7 @@ export class CodeSnippetMessageResponse extends Message {
       <div class="code">
         ${md.render(this.messagePayload.code)}
       </div>
-      <button type="button" class="button copy-to-editor">Copy to editor</button>
+      <button type="button" class="button open-in-editor">Open in editor</button>
 
       ${seeMore(this.messagePayload.url)}
       ${time(this.localeTime)}

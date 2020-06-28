@@ -20,9 +20,9 @@ function send() {
 }
 
 window.onload = function() {
-  document.querySelectorAll('.copy-to-editor').forEach((elem) => elem.addEventListener('click', () => {
+  document.querySelectorAll('.open-in-editor').forEach((elem) => elem.addEventListener('click', () => {
     vscode.postMessage({
-      command: "copy-to-editor",
+      command: "open-in-editor",
       data: elem.parentNode.querySelector('.code').innerText,
     });
   }));
