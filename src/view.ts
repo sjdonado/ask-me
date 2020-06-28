@@ -14,10 +14,6 @@ export default ({
 }) => {
   const messagesComponents = messages
     .map((message) => message.toHtml())
-    .map((r) => {
-      console.log(r);
-      return r;
-    })
     .join("");
 
   const title = 'Ask me 🤖';

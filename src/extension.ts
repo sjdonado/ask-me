@@ -19,9 +19,9 @@ import {
 import { parseQuestion } from "./utils";
 
 const languages = {
-  'Auto': 'auto',
-  'Python': 'py',
-  'Javascript': 'js'
+  "Auto": "auto",
+  "Python": "py",
+  "Javascript": "js"
 };
 
 const types = [
@@ -67,11 +67,11 @@ class WebViewPanel {
     let detectedLanguage: keyof typeof languages = language;
     if (language === "Auto" && vscode.window.activeTextEditor) {
       switch (vscode.window.activeTextEditor.document.languageId) {
-        case 'python':
-          detectedLanguage = 'Python';
+        case "python":
+          detectedLanguage = "Python";
           break;
-        case 'javascript':
-          detectedLanguage = 'Javascript';
+        case "javascript":
+          detectedLanguage = "Javascript";
           break;
       }
     }
@@ -136,7 +136,7 @@ class WebViewPanel {
 
           case "copy-to-editor":
             if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-              const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.workspaceFolders[0].uri.path, `example.${languages[language]}`));
+              const newFile = vscode.Uri.parse("untitled:" + path.join(vscode.workspace.workspaceFolders[0].uri.path, `example.${languages[language]}`));
               vscode.workspace.openTextDocument(newFile)
                 .then(document => {
                   const edit = new vscode.WorkspaceEdit();
@@ -145,12 +145,12 @@ class WebViewPanel {
                       if (success) {
                         vscode.window.showTextDocument(document);
                       } else {
-                        vscode.window.showInformationMessage('Error!');
+                        vscode.window.showInformationMessage("Error!");
                       }
                   });
               });
             } else {
-              vscode.window.showErrorMessage('Workspace not found');
+              vscode.window.showErrorMessage("Workspace not found");
             }
             return;
 
