@@ -18,6 +18,20 @@ import {
 } from "./components/Message";
 import { parseQuestion } from "./utils";
 
+const languages = {
+  'Auto': 'auto',
+  'Python': 'py',
+  'Javascript': 'js'
+};
+
+const types = [
+  "ARRAYS_SORTING",
+  "LOOPS_FOR",
+  "LOOPS_WHILE",
+  "CONDITIONALS_IF",
+  "STRINGS_MANIPULATION",
+];
+
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("ask-me.start", () => {
@@ -47,14 +61,19 @@ class WebViewPanel {
   private readonly _extensionPath: string;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionPath: string, language: string) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+  public static createOrShow(extensionPath: string, language: keyof typeof languages) {
+    const column = vscode.ViewColumn.Two;
 
-    let detectedLanguage: string = language;
+    let detectedLanguage: keyof typeof languages = language;
     if (language === "Auto" && vscode.window.activeTextEditor) {
-      detectedLanguage = vscode.window.activeTextEditor.document.languageId;
+      switch (vscode.window.activeTextEditor.document.languageId) {
+        case 'python':
+          detectedLanguage = 'Python';
+          break;
+        case 'javascript':
+          detectedLanguage = 'Javascript';
+          break;
+      }
     }
 
     if (detectedLanguage === "Auto") {
@@ -71,7 +90,7 @@ class WebViewPanel {
     const panel = vscode.window.createWebviewPanel(
       WebViewPanel.viewType,
       `Ask me: ${language}`,
-      column || vscode.ViewColumn.Two,
+      column,
       {
         // Enable javascript in the webview
         enableScripts: true,
@@ -83,14 +102,14 @@ class WebViewPanel {
       }
     );
 
-    WebViewPanel.currentPanel = new WebViewPanel(panel, extensionPath);
+    WebViewPanel.currentPanel = new WebViewPanel(panel, extensionPath, detectedLanguage);
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionPath: string) {
-    WebViewPanel.currentPanel = new WebViewPanel(panel, extensionPath);
+  public static revive(panel: vscode.WebviewPanel, extensionPath: string, language: keyof typeof languages) {
+    WebViewPanel.currentPanel = new WebViewPanel(panel, extensionPath, language);
   }
 
-  private constructor(panel: vscode.WebviewPanel, extensionPath: string) {
+  private constructor(panel: vscode.WebviewPanel, extensionPath: string, language: keyof typeof languages) {
     const messages: Array<Message> = [];
     this._panel = panel;
     this._extensionPath = extensionPath;
@@ -112,7 +131,27 @@ class WebViewPanel {
       (message) => {
         switch (message.command) {
           case "alert":
-            vscode.window.showErrorMessage(message.text);
+            vscode.window.showErrorMessage(message.data);
+            return;
+
+          case "copy-to-editor":
+            if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+              const newFile = vscode.Uri.parse('untitled:' + path.join(vscode.workspace.workspaceFolders[0].uri.path, `example.${languages[language]}`));
+              vscode.workspace.openTextDocument(newFile)
+                .then(document => {
+                  const edit = new vscode.WorkspaceEdit();
+                  edit.insert(newFile, new vscode.Position(0, 0), message.data);
+                  return vscode.workspace.applyEdit(edit).then(success => {
+                      if (success) {
+                        vscode.window.showTextDocument(document);
+                      } else {
+                        vscode.window.showInformationMessage('Error!');
+                      }
+                  });
+              });
+            } else {
+              vscode.window.showErrorMessage('Workspace not found');
+            }
             return;
 
           case "question-asked":
@@ -123,45 +162,49 @@ class WebViewPanel {
                 cancellable: false,
               },
               async (progress) => {
-                newMessage(new MessageRequest(message.text));
-
-                if (message.isMath) {
-                  const response = await evaluate(message.text);
-                  newMessage(new TextMessageResponse(response));
-                } else {
-                  const response = await queryBot(message.text);
-
-                  if (["ARRAY_SORTING"].includes(response)) {
-                    const { data } = await axios.post<Response>(API_URL, {
-                      query: print(GET_QUESTION),
-                      variables: {
-                        uid: "ARRAY_SORTING",
-                      },
-                    });
-
-                    if (data.data.questions.length === 0) {
-                      newMessage(
-                        new TextMessageResponse(
-                          "Question not found. I'm still learning. 😢"
-                        )
-                      );
-                    } else {
-                      newMessage(
-                        new TextMessageResponse("Heeey! Let me teach you 😎😛")
-                      );
-
-                      parseQuestion(data.data.questions[0]).map((message) =>
-                        newMessage(message)
-                      );
-                    }
-                  } else {
+                try {
+                  newMessage(new MessageRequest(message.data));
+  
+                  if (message.isMath) {
+                    const response = await evaluate(message.data);
                     newMessage(new TextMessageResponse(response));
+                  } else {
+                    const response = await queryBot(message.data);
+  
+                    if (types.includes(response)) {
+                      const { data } = await axios.post<Response>(API_URL, {
+                        query: print(GET_QUESTION),
+                        variables: {
+                          uid: response,
+                        },
+                      });
+  
+                      if (data.data.questions.length === 0) {
+                        newMessage(
+                          new TextMessageResponse(
+                            "Question not found. I'm still learning. 😢"
+                          )
+                        );
+                      } else {
+                        newMessage(
+                          new TextMessageResponse("Heeey! Let me teach you 😎😛")
+                        );
+  
+                        parseQuestion(data.data.questions[0]).map((message) =>
+                          newMessage(message)
+                        );
+                      }
+                    } else {
+                      newMessage(new TextMessageResponse(response));
+                    }
                   }
+  
+                  progress.report({ increment: 0 });
+  
+                  this._panel.webview.html = this._getHtmlForWebview(messages);
+                } catch(err) {
+                  vscode.window.showErrorMessage(err.message);
                 }
-
-                progress.report({ increment: 0 });
-
-                this._panel.webview.html = this._getHtmlForWebview(messages);
               }
             );
             return;
