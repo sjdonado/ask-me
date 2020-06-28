@@ -81,7 +81,7 @@ a {
 
 .response .code,
 .response .text {
-  overflow-x: auto;
+  overflow-x: scroll;
 }
 
 .response > .button {
