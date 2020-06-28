@@ -4,6 +4,9 @@ import random
 import nltk
 import os
 import numpy as np
+
+from scipy.spatial.distance import cdist
+from utils import get_regex_expression, preprocess_data
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
 from nltk.stem import WordNetLemmatizer
@@ -19,7 +22,7 @@ lemmatizer = WordNetLemmatizer()
 
 class Bot:
 
-  artifacts = {"chatbot_model": None, "classes": None, 
+  artifacts = {"chatbot_model": None, "classes": None,
                   "words": None, "intents": None}
 
   @classmethod
@@ -33,7 +36,7 @@ class Bot:
             cls.artifacts[name] = json.load(file_artifact)
         else:
           cls.artifacts["chatbot_model"] = Sequential()
-          cls.artifacts["chatbot_model"].add(Dense(128, input_shape=(53,), activation='relu'))
+          cls.artifacts["chatbot_model"].add(Dense(128, input_shape=(64,), activation='relu'))
           cls.artifacts["chatbot_model"].add(Dropout(0.5))
           cls.artifacts["chatbot_model"].add(Dense(64, activation='relu'))
           cls.artifacts["chatbot_model"].add(Dropout(0.5))
@@ -82,17 +85,44 @@ class Bot:
         result = random.choice(i['responses'])
     return result
 
+class Match:
+  artifacts = {"fse_model":None, "db_data":None, "bigrams": None}
+  regex = get_regex_expression()
+
+  @classmethod
+  def get_artifacts(cls):
+    for name, artifact in cls.artifacts.items():
+      if artifact is None:
+        with open(os.path.join(ARTIFACTS_PATH, f"{name}.pickle"), "rb") as file_artifact:
+          cls.artifacts[name] = pickle.load(file_artifact)
+    return tuple(cls.artifacts.values())
+
+  @classmethod
+  def predict_match(cls,msg):
+    fse_model, db_data, bigrams = cls.get_artifacts()
+    msg = preprocess_data(msg, cls.regex, False, True)
+    msg_transform = list(bigrams[msg])
+    query_embeddings = fse_model.infer([(msg_transform,0)])
+    distances = cdist(query_embeddings, db_data["data_embeddings"], "cosine")[0]
+    results = list(enumerate(distances))
+    results_ = sorted(results, key=lambda x: x[1], reverse=False)
+    title = db_data["db_inv"][results_[0][0]]
+    return title
+
 @app.route("/bot-response")
 def bot_response():
   s = request.args.get("s")
   print(s)
   # try:
   res = Bot.predict_class(s)
+  s = s.replace("python", "")
+  if res == "python_response":
+    res = Match.predict_match(s)
+
   return Response(json.dumps({"response": res}), status=200,
       mimetype="application/json", content_type="application/json")
-  # except Exception as e:
-  #   print(e)
-  #   return Response(json.dumps({"response": "Error"}), status=200,
+  # except:
+  #   return Response(json.dumps({"response":"Error"}),status=200,
   #       mimetype="application/json", content_type="application/json")
 
 

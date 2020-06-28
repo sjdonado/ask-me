@@ -4,7 +4,7 @@ LABEL "MAINTAINER"=emanuel.afanador@koombea.com
 
 ENV DEBIAN_FRONTEND noninteractive
 
-# System packages 
+# System packages
 RUN apt-get update && apt-get install -y --no-install-recommends nginx curl
 RUN apt-get -y install gcc mono-mcs gettext-base && \
     rm -rf /var/lib/apt/lists/*
@@ -23,11 +23,13 @@ RUN conda install -c anaconda -y python=3.7.7
 # Copy requirements.txt
 COPY config/requirements.txt /opt/ml/input/config/requirements.txt
 # Install requirements.txt
-RUN pip install -r /opt/ml/input/config/requirements.txt 
-RUN pip install gevent
-RUN pip install -U flask-cors
+RUN pip install -r /opt/ml/input/config/requirements.txt
+RUN pip install cython
+RUN pip install gevent flask_cors fse gensim spacy
 RUN python -m nltk.downloader punkt -d /miniconda/nltk_data
 RUN python -m nltk.downloader wordnet -d /miniconda/nltk_data
+RUN python -m spacy download en_core_web_sm
+RUN pip install scipy
 # Copy src
 COPY flask_app /opt/ml/code
 
