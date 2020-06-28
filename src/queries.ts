@@ -1,8 +1,12 @@
 import gql from "graphql-tag";
 
 export const GET_QUESTION =  gql`
-  query getQuestion($id: ID!) {
-    question(id: $id) {
+  query getQuestion($uid: String) {
+    questions(
+      where: {
+        uid: $uid
+      }
+    ) {
       id
       title
       uid
