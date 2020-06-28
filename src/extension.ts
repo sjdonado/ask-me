@@ -136,10 +136,14 @@ class WebViewPanel {
 
                   if (data.data.questions.length === 0) {
                     newMessage(
-                      new TextMessageResponse("Question not found, try again")
+                      new TextMessageResponse("Question not found. I'm still learning. 😢")
                     );
                   } else {
                     console.log(data.data.questions);
+
+                    newMessage(
+                      new TextMessageResponse("Heeey! Let me teach you 😎😛")
+                    )
 
                     parseQuestion(data.data.questions[0]).map((message) =>
                       newMessage(message)

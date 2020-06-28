@@ -53,7 +53,6 @@ export class InformationMessageResponse extends Message {
   }
 
   toHtml() {
-    // TODO
     return `<div class="message response">
       <div class="text">${this.messagePayload.description}</div>
       <span class="time">${this.localeTime}</span>
@@ -67,7 +66,6 @@ export class ImageMessageResponse extends Message {
   }
 
   toHtml() {
-    // TODO
     return `<div class="message response">
     <div class="title">
       <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
@@ -85,7 +83,7 @@ export class ReferenceLinkMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <div>Here is a recommended link: 
+      <div>Recomended link: 
         <span class="title">
           <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
         </span>
