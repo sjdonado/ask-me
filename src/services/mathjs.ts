@@ -1,14 +1,16 @@
 import axios from "axios";
+import { MATHJS_URL } from "../config";
 
-const BASE = "http://api.mathjs.org/v4/";
-
-interface Response {
+interface MathjsResponse {
   result?: string;
   error?: string;
 }
 
 export const evaluate = async (expr: string) => {
-  const { data } = await axios.post<Response>(BASE, { expr, precision: 3 });
+  const { data } = await axios.post<MathjsResponse>(MATHJS_URL, {
+    expr,
+    precision: 3,
+  });
 
   if (data.error) {
     return "Oops. Too dificult! 😩";
