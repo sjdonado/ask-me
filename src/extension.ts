@@ -1,9 +1,17 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
+import axios, { AxiosResponse } from 'axios';
+import { print } from "graphql";
+
+import { GET_QUESTION } from './queries';
 
 interface Message {
     type: string,
     text: string
+}
+
+interface Response {
+    data: { question: { information: any } }
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -24,24 +32,6 @@ export function activate(context: vscode.ExtensionContext) {
             WebViewPanel.createOrShow(context.extensionPath, 'Javascript');
         })
     );
-
-    // context.subscriptions.push(
-    //     vscode.commands.registerCommand('ask-me.doRefactor', () => {
-    //         if (WebViewPanel.currentPanel) {
-    //             WebViewPanel.currentPanel.doRefactor();
-    //         }
-    //     })
-    // );
-
-    // if (vscode.window.registerWebviewPanelSerializer) {
-    //     // Make sure we register a serializer in activation event
-    //     vscode.window.registerWebviewPanelSerializer(WebViewPanel.viewType, {
-    //         async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-    //             console.log(`Got state: ${state}`);
-    //             WebViewPanel.revive(webviewPanel, context.extensionPath);
-    //         }
-    //     });
-    // }
 }
 
 class WebViewPanel {
@@ -108,14 +98,29 @@ class WebViewPanel {
 
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(
-            message => {
+            async message => {
                 switch (message.command) {
                     case 'alert':
                         vscode.window.showErrorMessage(message.text);
                         return;
                     case 'question-asked':
                         messages.push({ type: 'sent', text: message.text });
-                        messages.push({ type: 'received', text: 'HI!' });
+                        // messages.push({ type: 'received', text: 'HI!' });
+                        const { data } = await axios
+                            .post<Response, AxiosResponse<Response>>('https://d2fc6a9754a5.ngrok.io/graphql', {
+                                query: print(GET_QUESTION),
+                                variables: {
+                                    id: 1,
+                                },
+                            });
+
+                        console.log('data', data);
+
+                        const { title, description, url } = data.data.question.information[0] as any;
+                        // TODO map function
+                        messages.push({ type: 'received', text: `${title} <br> ${description}` });
+                        messages.push({ type: 'received', text: `For futher information: ${url}` });
+
                         this._panel.webview.html = this._getHtmlForWebview(messages);
                         return;
                 }
@@ -124,12 +129,6 @@ class WebViewPanel {
             this._disposables
         );
     }
-
-    // public doRefactor() {
-    //     // Send a message to the webview webview.
-    //     // You can send any JSON serializable data.
-    //     this._panel.webview.postMessage({ command: 'refactor' });
-	// }
 
     public dispose() {
         WebViewPanel.currentPanel = undefined;
@@ -167,7 +166,9 @@ class WebViewPanel {
                 <link rel="stylesheet" type="text/css" href="${stylesUri}">
             </head>
             <body>
-                <h1>Welcome to Ask me :)</h1>
+                <div class="header">
+                    <h1>Welcome to Ask me :)</h1>
+                </div>
                 <div class="container">
                     <div id="chat">${messages.map((msg) => `<p class="message ${msg.type}">${msg.text}</p>`).join('')}</div>
                     <form class="question-form" onsubmit="send()">
