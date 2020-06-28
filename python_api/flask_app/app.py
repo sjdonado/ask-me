@@ -3,22 +3,24 @@ import pickle
 import random
 import nltk
 import os
-
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Dropout
 from nltk.stem import WordNetLemmatizer
-from flask import Flask
+from flask import Flask, request, Response
 from flask_cors import CORS
-from keras.model import load_model
 
 app = Flask(__name__)
 CORS(app)
 
 PREFIX = '/opt/ml/'
 ARTIFACTS_PATH = os.path.join(PREFIX, 'model')
+lemmatizer = WordNetLemmatizer()
 
 class Bot:
 
-  artifacts = {chatbot_model: None, classes: None, 
-                  words: None, intents: None}
+  artifacts = {"chatbot_model": None, "classes": None, 
+                  "words": None, "intents": None}
 
   @classmethod
   def get_model_artifacts(cls):
@@ -26,11 +28,17 @@ class Bot:
     """
     for name, artifact in cls.artifacts.items():
       if artifact is None:
-        try:
-          with open(os.path.join(ARTIFACTS_PATH, f"{name}.json", "r")) as file_artifact:
+        if name != "chatbot_model":
+          with open(os.path.join(ARTIFACTS_PATH, f"{name}.json"), "r") as file_artifact:
             cls.artifacts[name] = json.load(file_artifact)
-        except:
-          cls.artifacts[name] = load_model(os.path.join(ARTIFACTS_PATH, "chatbot_model.h5"))
+        else:
+          cls.artifacts["chatbot_model"] = Sequential()
+          cls.artifacts["chatbot_model"].add(Dense(128, input_shape=(53,), activation='relu'))
+          cls.artifacts["chatbot_model"].add(Dropout(0.5))
+          cls.artifacts["chatbot_model"].add(Dense(64, activation='relu'))
+          cls.artifacts["chatbot_model"].add(Dropout(0.5))
+          cls.artifacts["chatbot_model"].add(Dense(5, activation='softmax'))
+          cls.artifacts["chatbot_model"].load_weights("/opt/ml/model/chatbot_model.h5")
     return tuple(cls.artifacts.values())
 
   @classmethod
@@ -44,7 +52,7 @@ class Bot:
   @classmethod
   def bag_of_words(cls, sentence, words):
     # tokenizing patterns
-    sentence_words = clean_up_sentence(sentence)
+    sentence_words = cls.clean_up_sentence(sentence)
     # bag of words - vocabulary matrix
     bag = [0]*len(words)
     for s in sentence_words:
@@ -57,7 +65,7 @@ class Bot:
   def predict_class(cls, sentence):
     model, classes, words, intents = cls.get_model_artifacts()
     # filter below  threshold predictions
-    p = bag_of_words(sentence, words,show_details=False)
+    p = cls.bag_of_words(sentence, words)
     res = model.predict(np.array([p]))[0]
     ERROR_THRESHOLD = 0.25
     results = [[i,r] for i,r in enumerate(res) if r>ERROR_THRESHOLD]
@@ -67,10 +75,27 @@ class Bot:
     for r in results:
         return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
 
-    tag = ints[0]['intent']
+    tag = return_list[0]['intent']
     list_of_intents = intents['intents']
     for i in list_of_intents:
       if(i["tag"]==tag):
         result = random.choice(i['responses'])
-            break
     return result
+
+@app.route("/bot-response")
+def bot_response():
+  s = request.args.get("s")
+  print(s)
+  # try:
+  res = Bot.predict_class(s)
+  return Response(json.dumps({"response": res}), status=200,
+      mimetype="application/json", content_type="application/json")
+  # except Exception as e:
+  #   print(e)
+  #   return Response(json.dumps({"response": "Error"}), status=200,
+  #       mimetype="application/json", content_type="application/json")
+
+
+@app.route("/")
+def index():
+  return "hola mundo"
