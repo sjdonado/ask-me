@@ -1,15 +1,16 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { ProgressLocation } from "vscode";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { print } from "graphql";
 
 import view from "./view";
 
 import { GET_QUESTION } from "./queries";
-import { Response, Question } from "./types";
+import { Response } from "./types";
 import { API_URL } from "./config";
 import { evaluate } from "./services/mathjs";
+import { queryBot } from "./services/bot";
 import {
   Message,
   MessageRequest,
@@ -123,33 +124,38 @@ class WebViewPanel {
               },
               async (progress) => {
                 newMessage(new MessageRequest(message.text));
+
                 if (message.isMath) {
                   const response = await evaluate(message.text);
                   newMessage(new TextMessageResponse(response));
                 } else {
-                  const { data } = await axios.post<Response>(API_URL, {
-                    query: print(GET_QUESTION),
-                    variables: {
-                      uid: "ARRAY_SORTING",
-                    },
-                  });
+                  const response = await queryBot(message.text);
 
-                  if (data.data.questions.length === 0) {
-                    newMessage(
-                      new TextMessageResponse(
-                        "Question not found. I'm still learning. 😢"
-                      )
-                    );
+                  if (["ARRAY_SORTING"].includes(response)) {
+                    const { data } = await axios.post<Response>(API_URL, {
+                      query: print(GET_QUESTION),
+                      variables: {
+                        uid: "ARRAY_SORTING",
+                      },
+                    });
+
+                    if (data.data.questions.length === 0) {
+                      newMessage(
+                        new TextMessageResponse(
+                          "Question not found. I'm still learning. 😢"
+                        )
+                      );
+                    } else {
+                      newMessage(
+                        new TextMessageResponse("Heeey! Let me teach you 😎😛")
+                      );
+
+                      parseQuestion(data.data.questions[0]).map((message) =>
+                        newMessage(message)
+                      );
+                    }
                   } else {
-                    console.log(data.data.questions);
-
-                    newMessage(
-                      new TextMessageResponse("Heeey! Let me teach you 😎😛")
-                    );
-
-                    parseQuestion(data.data.questions[0]).map((message) =>
-                      newMessage(message)
-                    );
+                    newMessage(new TextMessageResponse(response));
                   }
                 }
 
