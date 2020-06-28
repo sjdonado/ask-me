@@ -1,7 +1,6 @@
 :root {
   --textPrimaryColor: rgba(255, 255, 255, 0.58);
   --textSecondaryColor: rgba(249, 249, 250, 0.886);
-
   --primaryColor: #2f80ed;
 }
 
@@ -15,6 +14,7 @@
 
 .header > span {
   color: var(--textSecondaryColor);
+  font-size: 12px;
 }
 
 .container {
@@ -34,6 +34,17 @@
   margin-bottom: 6px;
   max-width: 300px;
   border-radius: 2px;
+}
+
+#chat > .message > .time {
+  width: 100%;
+  position: relative;
+  text-align: right;
+
+  bottom: 0;
+
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.58);
 }
 
 .sent {
