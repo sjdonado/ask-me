@@ -1,15 +1,59 @@
+body {
+    text-align: center;
+}
+
 .container {
-    margin-top: 12px;
     display: flex;
     flex-direction: column;
+    margin: 24px auto;
 }
 
 #chat {
     display: flex;
     flex-direction: column;
+    margin-bottom: 24px;
 }
 
-.wrapper {
+#chat > .message {
+    padding: 6px 12px;
+    border: 1px solid white;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    max-width: 300px;
+}
+
+.sent {
+    align-self: flex-end;
+}
+
+.received {
+    align-self: flex-start;
+}
+
+.question-form {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 6px;
+    border: 1px solid white;
+    border-radius: 6px;
+}
+
+.question-form > input {
+    flex: 1;
+    margin-left: 6px;
+    background-color: transparent;
+    color: white;
+}
+
+.question-form > input, .question-form > input:focus {
+    border-color: transparent;
+    outline: none;
+}
+
+.question-form > button {
+    width: 60px;
+    margin-left: 12px;
+    border-radius: 4px;
 }

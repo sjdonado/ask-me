@@ -11,8 +11,8 @@
 	],
 	"activationEvents": [
 		"onCommand:ask-me.start",
-        "onCommand:ask-me.python",
-        "onCommand:ask-me.javascript"
+		"onCommand:ask-me.python",
+		"onCommand:ask-me.javascript"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
