@@ -1,73 +1,85 @@
+:root {
+  --textPrimaryColor: rgba(255, 255, 255, 0.58);
+  --textSecondaryColor: rgba(249, 249, 250, 0.886);
+
+  --primaryColor: #2f80ed;
+}
+
 .header {
-    font-size: small;
+  font-size: small;
 }
 
 .header > h2 {
-    color: rgba(255, 255, 255, 0.58);
+  color: var(--textPrimaryColor);
+}
+
+.header > span {
+  color: var(--textSecondaryColor);
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+  margin: 24px auto;
 }
 
 #chat {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
 }
 
 #chat > .message {
-    padding: 6px 12px;
-    margin-bottom: 6px;
-    max-width: 300px;
-    border-radius: 2px;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  max-width: 300px;
+  border-radius: 2px;
 }
 
 .sent {
-    align-self: flex-end;
-    background: #2F80ED;
-    border-color: #2F80ED;
-    color: white;
+  align-self: flex-end;
+  background: var(--primaryColor);
+  border-color: var(--primaryColor);
+  color: white;
 }
 
 .received {
-    align-self: flex-start;
-    background: #3A3B3C;
-    border-color: #3A3B3C;
-    color: #FFFFF2;
+  align-self: flex-start;
+  background: #3a3b3c;
+  border-color: #3a3b3c;
+  color: #fffff2;
 }
 
 .question-form {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 12px;
-    background: #3A3B3C;
-    border-radius: 2px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px;
+  background: #3a3b3c;
+  border-radius: 2px;
 }
 
 .question-form > input {
-    flex: 1;
-    margin-left: 6px;
-    background-color: transparent;
-    color: white;
+  flex: 1;
+  margin-left: 6px;
+  background-color: transparent;
+  color: white;
 }
 
-.question-form > input, .question-form > input:focus {
-    border-color: transparent;
-    outline: none;
+.question-form > input,
+.question-form > input:focus {
+  border-color: transparent;
+  outline: none;
 }
 
 .question-form > button {
-    width: 60px;
-    height: 20px;
-    margin-left: 12px;
-    border-radius: 4px;
-    background: #2F80ED;
-    border-color: #2F80ED;
-    color: white;
-    border-radius: 4px;
+  width: 60px;
+  height: 20px;
+  margin-left: 12px;
+  border-radius: 4px;
+  background: var(--primaryColor);
+  border-color: var(--primaryColor);
+  color: white;
+  border-radius: 4px;
 }
