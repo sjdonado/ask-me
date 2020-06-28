@@ -6,13 +6,9 @@ import { print } from "graphql";
 import view from "./view";
 
 import { GET_QUESTION } from "./queries";
-import { API_URL } from "./config";
-import {
-    Message,
-    Tag,
-    Question,
-    Response
-} from './types';
+import { Message, Question, Response } from "./types";
+import { API_URL } from './config';
+import { evaluate } from "./services/mathjs";
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -110,7 +106,9 @@ class WebViewPanel {
             vscode.window.showErrorMessage(message.text);
             return;
           case "question-asked":
+            evaluate("12 + sqrt(3.1442)").then(console.log);
             newMessage('sent', message.text);
+
             // messages.push({ type: 'received', text: 'HI!' });
             const { data } = await axios.post<Response,AxiosResponse<Response>>(API_URL, {
               query: print(GET_QUESTION),
