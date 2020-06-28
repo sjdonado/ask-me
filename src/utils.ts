@@ -7,46 +7,46 @@ import {
   ComponentResponseYoutubeVideo,
   Information,
 } from "./types";
-
-/**
- * TODO
- * 
- * @param information
- */
-const parseInformation = (information: Information) => {
-  return information
-    .map((component) => {
-      switch (component.__typename) {
-        case "ComponentResponseCodeSnippet": {
-          break;
-        }
-
-        case "ComponentResponseImage": {
-          break;
-        }
-
-        case "ComponentResponseInformationSnippet": {
-          break;
-        }
-
-        case "ComponentResponseReferenceLink": {
-          break;
-        }
-
-        case "ComponentResponseYoutubeVideo": {
-          break;
-        }
-      }
-    })
-    .join("");
-};
+import {
+  InformationMessageResponse,
+  ImageMessageResponse,
+  ReferenceLinkMessageResponse,
+  YoutubeVideoMessageResponse,
+  CodeSnippetMessageResponse,
+} from "./components/Message";
 
 export const parseQuestion = (question: Question) => {
   const { id, information, title, tags, uid } = question;
 
-  const parsedInformation = parseInformation(information);
+  return information.map((component) => {
+    switch (component.__typename) {
+      case "ComponentResponseCodeSnippet": {
+        return new CodeSnippetMessageResponse(
+          component as ComponentResponseCodeSnippet
+        );
+      }
 
-  return `<div>
-    <div>${parsedInformation}</div>
-  </div>`;
+      case "ComponentResponseImage": {
+        return new ImageMessageResponse(component as ComponentResponseImage);
+      }
+
+      case "ComponentResponseReferenceLink": {
+        return new ReferenceLinkMessageResponse(
+          component as ComponentResponseReferenceLink
+        );
+      }
+
+      case "ComponentResponseYoutubeVideo": {
+        return new YoutubeVideoMessageResponse(
+          component as ComponentResponseYoutubeVideo
+        );
+      }
+
+      default: {
+        return new InformationMessageResponse(
+          component as ComponentResponseInformationSnippet
+        );
+      }
+    }
+  });
 };

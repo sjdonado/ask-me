@@ -1,7 +1,9 @@
-export interface Message {
-  type: String;
-  text: String;
-  time: String;
+export enum MessageType {
+  CODE,
+  IMAGE,
+  INFORMATION,
+  LINK,
+  YOUTUBE,
 }
 
 export interface Tag {
@@ -50,6 +52,13 @@ export interface ComponentResponseReferenceLink extends Component {
 export interface ComponentResponseYoutubeVideo extends Component {
   title: String;
 }
+
+export type Components =
+  | ComponentResponseCodeSnippet
+  | ComponentResponseImage
+  | ComponentResponseInformationSnippet
+  | ComponentResponseReferenceLink
+  | ComponentResponseYoutubeVideo;
 
 export type Information = Array<
   | ComponentResponseCodeSnippet

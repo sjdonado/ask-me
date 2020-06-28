@@ -6,10 +6,16 @@ import { print } from "graphql";
 import view from "./view";
 
 import { GET_QUESTION } from "./queries";
-import { Message, Question, Response } from "./types";
-import { API_URL } from './config';
+import { Response, Question } from "./types";
+import { API_URL } from "./config";
 import { evaluate } from "./services/mathjs";
-  
+import {
+  Message,
+  MessageRequest,
+  TextMessageResponse,
+} from "./components/Message";
+import { parseQuestion } from "./utils";
+
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("ask-me.start", () => {
@@ -83,7 +89,7 @@ class WebViewPanel {
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionPath: string) {
-    const messages: Message[] = [];
+    const messages: Array<Message> = [];
     this._panel = panel;
     this._extensionPath = extensionPath;
 
@@ -94,9 +100,7 @@ class WebViewPanel {
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    const newMessage = (type: string, text: string) => {
-        messages.push({ type, text, time: new Date().toLocaleTimeString() });
-    };
+    const newMessage = (message: Message) => messages.push(message);
 
     // Handle messages from the webview
     this._panel.webview.onDidReceiveMessage(
@@ -105,28 +109,31 @@ class WebViewPanel {
           case "alert":
             vscode.window.showErrorMessage(message.text);
             return;
+
           case "question-asked":
-            newMessage('sent', message.text);
+            newMessage(new MessageRequest(message.text));
+
             if (message.isMath) {
               const response = await evaluate(message.text);
-              newMessage('response', response);
+              newMessage(new TextMessageResponse(response));
             } else {
-              const { data } = await axios.post<Response,AxiosResponse<Response>>(API_URL, {
+              const { data } = await axios.post<Response>(API_URL, {
                 query: print(GET_QUESTION),
                 variables: {
                   uid: "ARRAY_SORTING",
                 },
               });
-  
+
               if (data.data.questions.length === 0) {
-                newMessage('response', 'Question not found, try again');
+                newMessage(
+                  new TextMessageResponse("Question not found, try again")
+                );
               } else {
                 console.log(data.data.questions);
-                const { title, description, url } = data.data.questions[0].information[0] as any;
-                
-                // TODO map function
-                newMessage('response', `${title} <br> ${description}`);
-                newMessage('response', `For futher information: ${url}`);
+
+                parseQuestion(
+                  data.data.questions[0] as Question
+                ).map((message) => newMessage(message));
               }
             }
 

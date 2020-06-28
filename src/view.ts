@@ -1,12 +1,12 @@
 import { Uri } from "vscode";
-
-import { Message } from "./types";
-
-const messageComponent = ({ type, text, time }: Message) =>
-  `<div class="message ${type}">
-    <div class="text">${text}</div>
-    <span class="time">${time}</span>
-  </div>`;
+import {
+  MessageRequest,
+  InformationMessageResponse,
+  ImageMessageResponse,
+  ReferenceLinkMessageResponse,
+  TextMessageResponse,
+  Message,
+} from "./components/Message";
 
 export default ({
   stylesUri,
@@ -17,7 +17,9 @@ export default ({
   messages: Array<Message>;
   scriptUri: Uri;
 }) => {
-  const messagesComponents = messages.map(messageComponent).join("");
+  const messagesComponents = messages
+    .map((message) => message.toHtml())
+    .join("");
 
   return `<!DOCTYPE html>
   <html lang="en">
