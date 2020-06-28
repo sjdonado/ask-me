@@ -6,6 +6,6 @@ interface Response {
 }
 
 export const queryBot = async (q: string) => {
-  const { data } = await axios.get<Response>(`${BOT_API_URL}?=${q}`);
+  const { data } = await axios.get<Response>(`${BOT_API_URL}?s=${q}`);
   return data.response;
 };

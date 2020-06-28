@@ -42,7 +42,7 @@ a {
 #chat > .message > .time {
   align-self: flex-end;
   margin-top: 6px;
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .sent {
@@ -83,15 +83,16 @@ a {
   overflow-x: scroll;
 }
 
-.response > a.button {
+.response > .button {
   cursor: pointer;
-  margin-top: 5px;
-  padding: 0px 5px;
+  margin-top: 6px;
+  padding: 0px 6px;
   border-radius: 4px;
   background: var(--vscode-button-background);
   border-color: var(--vscode-button-background);
   color: var(--vscode-button-foreground);
-  width: 80px;
+  font-size: smaller;
+  height: 20px;
   text-align: center;
 }
 

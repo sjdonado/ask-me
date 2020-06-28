@@ -6,9 +6,14 @@
 	"engines": {
 		"vscode": "^1.46.0"
 	},
+	"publisher": "ksm",
+	"author": {
+		"name": "krthr sjdonado manuLasker"
+	},
 	"categories": [
 		"Other"
 	],
+	"license": "SEE LICENSE IN LICENSE.txt",
 	"activationEvents": [
 		"onCommand:ask-me.start",
 		"onCommand:ask-me.python",
