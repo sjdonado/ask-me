@@ -1,32 +1,29 @@
-:root {
-  --textPrimaryColor: rgba(255, 255, 255, 0.58);
-  --textSecondaryColor: rgba(249, 249, 250, 0.886);
-  --primaryColor: rgb(59, 136, 253);
+body {
+  height: 97vh;
 }
 
-.header {
-  font-size: small;
+.header > h1 {
+  color: var(--vscode-foreground);
+  margin-bottom: 6px;
 }
 
-.header > h2 {
-  color: var(--textPrimaryColor);
-}
-
-.header > span {
-  color: var(--textSecondaryColor);
-  font-size: 12px;
+.header > h4 {
+  color: var(--vscode-descriptionForeground);
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  margin: 24px auto;
+  margin-top: 24px;
+  height: calc(100% - 100px);
 }
 
 #chat {
   display: flex;
   flex-direction: column;
   margin-bottom: 24px;
+  height: 100%;
+  overflow-y: scroll;
 }
 
 #chat > .message {
@@ -42,21 +39,28 @@
   align-self: flex-end;
   margin-top: 6px;
   font-size: 10px;
-  color: var(--textPrimaryColor);
 }
 
 .sent {
   align-self: flex-end;
-  background: var(--primaryColor);
-  border-color: var(--primaryColor);
-  color: white;
+  background: var(--vscode-button-background);
+  border-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.sent > .time {
+  color: var(--vscode-button-foreground);
 }
 
 .response {
   align-self: flex-start;
-  background: #3a3b3c;
-  border-color: #3a3b3c;
-  color: #fffff2;
+  background: var(--vscode-textCodeBlock-background);
+  border-color: var(--vscode-textCodeBlock-background);
+  color: var(--vscode-foreground);
+}
+
+.response > .time {
+  color: var(--vscode-foreground);
 }
 
 .question-form {
@@ -65,7 +69,7 @@
   align-items: center;
   justify-content: flex-end;
   padding: 12px;
-  background: #3a3b3c;
+  background: var(--vscode-textCodeBlock-background);
   border-radius: 2px;
 }
 
@@ -73,7 +77,7 @@
   flex: 1;
   margin-left: 6px;
   background-color: transparent;
-  color: white;
+  color: var(--vscode-foreground);
 }
 
 .question-form > input,
@@ -83,12 +87,17 @@
 }
 
 .question-form > button {
+  cursor: pointer;
   width: 60px;
-  height: 20px;
+  height: 26px;
   margin-left: 12px;
   border-radius: 4px;
-  background: var(--primaryColor);
-  border-color: var(--primaryColor);
-  color: white;
+  background: var(--vscode-button-background);
+  border-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
   border-radius: 4px;
+}
+
+#typing {
+  display: none;
 }

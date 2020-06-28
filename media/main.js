@@ -21,4 +21,6 @@ function send() {
 
 window.onload = function() {
     document.getElementById('question').focus();
+    const chat = document.getElementById('chat');
+    chat.scrollTop = chat.scrollHeight;
 };

@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
+import { ProgressLocation } from "vscode";
 import axios, { AxiosResponse } from "axios";
 import { print } from "graphql";
 
@@ -87,50 +88,59 @@ class WebViewPanel {
     this._panel = panel;
     this._extensionPath = extensionPath;
 
-    // Set the webview's initial html content
+    const newMessage = (type: string, text: string) => {
+      messages.push({ type, text, time: new Date().toLocaleTimeString() });
+    };
+
+    // Initialize
+    newMessage('response', 'Hi! 👀');
     this._panel.webview.html = this._getHtmlForWebview(messages);
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
-    const newMessage = (type: string, text: string) => {
-        messages.push({ type, text, time: new Date().toLocaleTimeString() });
-    };
-
     // Handle messages from the webview
     this._panel.webview.onDidReceiveMessage(
-      async (message) => {
+      (message) => {
         switch (message.command) {
           case "alert":
             vscode.window.showErrorMessage(message.text);
             return;
           case "question-asked":
-            newMessage('sent', message.text);
-            if (message.isMath) {
-              const response = await evaluate(message.text);
-              newMessage('response', response);
-            } else {
-              const { data } = await axios.post<Response,AxiosResponse<Response>>(API_URL, {
-                query: print(GET_QUESTION),
-                variables: {
-                  uid: "ARRAY_SORTING",
-                },
-              });
-  
-              if (data.data.questions.length === 0) {
-                newMessage('response', 'Question not found, try again');
+            vscode.window.withProgress({
+              location: ProgressLocation.Notification,
+              title: "Answering...",
+              cancellable: false,
+            }, async (progress) => {
+              newMessage('sent', message.text);
+              if (message.isMath) {
+                const response = await evaluate(message.text);
+                newMessage('response', response);
               } else {
-                console.log(data.data.questions);
-                const { title, description, url } = data.data.questions[0].information[0] as any;
-                
-                // TODO map function
-                newMessage('response', `${title} <br> ${description}`);
-                newMessage('response', `For futher information: ${url}`);
-              }
-            }
+                const { data } = await axios.post<Response,AxiosResponse<Response>>(API_URL, {
+                  query: print(GET_QUESTION),
+                  variables: {
+                    uid: "ARRAY_SORTING",
+                  },
+                });
 
-            this._panel.webview.html = this._getHtmlForWebview(messages);
+                if (data.data.questions.length === 0) {
+                  newMessage('response', 'Question not found, try again');
+                } else {
+                  console.log(data.data.questions);
+                  const { title, description, url } = data.data.questions[0].information[0] as any;
+                  
+                  // TODO map function
+                  newMessage('response', `${title} <br> ${description}`);
+                  newMessage('response', `For futher information: ${url}`);
+                }
+              }
+
+              progress.report({ increment: 0 });
+  
+              this._panel.webview.html = this._getHtmlForWebview(messages);
+            });
             return;
         }
       },
