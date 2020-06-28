@@ -59,6 +59,19 @@ body {
   color: var(--vscode-foreground);
 }
 
+.response > .title {
+  font-weight: bold;
+  color: var(--vscode-foreground);
+}
+
+.response > .title > a {
+  text-decoration: none;
+}
+
+.response > img {
+  margin-top: 5px;
+}
+
 .response > .time {
   color: var(--vscode-foreground);
 }

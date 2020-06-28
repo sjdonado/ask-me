@@ -1,12 +1,11 @@
 import {
-  MessageType,
-  Components,
   ComponentResponseInformationSnippet,
   ComponentResponseImage,
   ComponentResponseYoutubeVideo,
   ComponentResponseReferenceLink,
   ComponentResponseCodeSnippet,
 } from "./../types";
+import { API_BASE } from "../config";
 
 export abstract class Message {
   constructor(public time: Date) {}
@@ -68,8 +67,10 @@ export class ImageMessageResponse extends Message {
   toHtml() {
     // TODO
     return `<div class="message response">
-    <div class="text">${this.messagePayload.title}</div>
-    <img src="${this.messagePayload.image.url}" width="100%" />
+    <div class="title">
+      <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
+    </div>
+    <img src="${API_BASE + this.messagePayload.image.url}" width="100%" />
     <span class="time">${this.localeTime}</span>
   </div>`;
   }
@@ -95,9 +96,9 @@ export class YoutubeVideoMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <iframe id="ytplayer" type="text/html" width="640" height="360"
+      <!-- <iframe id="ytplayer" type="text/html" width="640" height="360"
       src="http://www.youtube.com/embed/M7lc1UVf-VE?autoplay=1&origin=http://example.com"
-      frameborder="0"/>
+      frameborder="0"/> -->
     </div>`;
   }
 }
