@@ -100,7 +100,7 @@ class Match:
   @classmethod
   def predict_match(cls,msg):
     fse_model, db_data, bigrams = cls.get_artifacts()
-    msg = preprocess_data(msg, regex, False, False)
+    msg = preprocess_data(msg, cls.regex, False, False)
     msg_transform = list(bigrams[msg])
     query_embeddings = fse_model.infer([(msg_transform,0)])
     distances = cdist(query_embeddings, db_data["data_embeddings"], "cosine")[0]
@@ -113,16 +113,17 @@ class Match:
 def bot_response():
   s = request.args.get("s")
   print(s)
-  try:
-    res = Bot.predict_class(s)
-    if res == "python_response":
-      res = Match.predict_match(s)
+  # try:
+  res = Bot.predict_class(s)
+  s = s.replace("python", "")
+  if res == "python_response":
+    res = Match.predict_match(s)
 
-    return Response(json.dumps({"response": res}), status=200,
-        mimetype="application/json", content_type="application/json")
-  except:
-    return Response(json.dumps({"response":"Error"}),status=200,
-        mimetype="application/json", content_type="application/json")
+  return Response(json.dumps({"response": res}), status=200,
+      mimetype="application/json", content_type="application/json")
+  # except:
+  #   return Response(json.dumps({"response":"Error"}),status=200,
+  #       mimetype="application/json", content_type="application/json")
 
 
 @app.route("/")

@@ -25,7 +25,7 @@ COPY config/requirements.txt /opt/ml/input/config/requirements.txt
 # Install requirements.txt
 RUN pip install -r /opt/ml/input/config/requirements.txt
 RUN pip install cython
-RUN pip install gevent flask_cors fse gensim
+RUN pip install gevent flask_cors fse gensim spacy
 RUN python -m nltk.downloader punkt
 RUN python -m nltk.downloader wordnet
 RUN python -m spacy download en_core_web_sm
