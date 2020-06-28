@@ -1,3 +1,5 @@
+import * as MarkdownIt from "markdown-it";
+import * as hljs from "highlight.js";
 import {
   ComponentResponseInformationSnippet,
   ComponentResponseImage,
@@ -5,7 +7,20 @@ import {
   ComponentResponseReferenceLink,
   ComponentResponseCodeSnippet,
 } from "./../types";
+
 import { API_BASE } from "../config";
+
+const md = new MarkdownIt({
+  highlight: (str, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(lang, str).value;
+      } catch (__) {}
+    }
+
+    return ""; // use external default escaping
+  },
+});
 
 export abstract class Message {
   constructor(public time: Date) {}
@@ -33,15 +48,20 @@ export class MessageRequest extends Message {
 
 // RESPONSES
 
+const time = (localeTime: String) => `<span class="time">${localeTime}</span>`;
+
+const seeMore = (url: string) =>
+  url ? `<a class="button" href="${url}">See more 👀</a>` : "";
+
 export class TextMessageResponse extends Message {
-  constructor(public text: String) {
+  constructor(public text: string) {
     super(new Date());
   }
 
   toHtml() {
     return `
     <div class="message response">
-      <div class="text">${this.text}</div>
+      <div class="text">${md.render(this.text)}</div>
       <span class="time">${this.localeTime}</span>
     </div>`;
   }
@@ -54,8 +74,11 @@ export class InformationMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <div class="text">${this.messagePayload.description}</div>
-      <span class="time">${this.localeTime}</span>
+      <div class="text">
+        ${md.render(this.messagePayload.description)}
+      </div>
+      ${seeMore(this.messagePayload.url)}
+      ${time(this.localeTime)}
     </div>`;
   }
 }
@@ -67,11 +90,10 @@ export class ImageMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-    <div class="title">
-      <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
-    </div>
-    <img src="${API_BASE + this.messagePayload.image.url}" width="100%" />
-    <span class="time">${this.localeTime}</span>
+      <img src="${API_BASE + this.messagePayload.image.url}" width="100%" />
+
+      ${seeMore(this.messagePayload.url)}
+      ${time(this.localeTime)}
   </div>`;
   }
 }
@@ -83,12 +105,13 @@ export class ReferenceLinkMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <div>Recomended link: 
+      <div>Recomended link 😉: 
         <span class="title">
           <a href="${this.messagePayload.url}">${this.messagePayload.title}</a>
         </span>
       </div>
-      <span class="time">${this.localeTime}</span>
+      
+      ${time(this.localeTime)}
     </div>`;
   }
 }
@@ -100,9 +123,13 @@ export class YoutubeVideoMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      <!-- <iframe id="ytplayer" type="text/html" width="640" height="360"
-      src="http://www.youtube.com/embed/M7lc1UVf-VE?autoplay=1&origin=http://example.com"
-      frameborder="0"/> -->
+      <div class="text">Here is a (super interesting) video 👻:
+        <span class="title">
+          <a href="${this.messagePayload.videoUrl}">
+          ${this.messagePayload.videoTitle}
+          </a>
+        </span>
+      </div>
     </div>`;
   }
 }
@@ -114,7 +141,14 @@ export class CodeSnippetMessageResponse extends Message {
 
   toHtml() {
     return `<div class="message response">
-      Code Snippet
+      <div class="text">${md.render(this.messagePayload.description)}</div>
+      
+      <div class="code">
+        ${md.render(this.messagePayload.code)}
+      </div>
+
+      ${seeMore(this.messagePayload.url)}
+      ${time(this.localeTime)}
     </div>`;
   }
 }

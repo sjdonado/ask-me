@@ -136,14 +136,16 @@ class WebViewPanel {
 
                   if (data.data.questions.length === 0) {
                     newMessage(
-                      new TextMessageResponse("Question not found. I'm still learning. 😢")
+                      new TextMessageResponse(
+                        "Question not found. I'm still learning. 😢"
+                      )
                     );
                   } else {
                     console.log(data.data.questions);
 
                     newMessage(
                       new TextMessageResponse("Heeey! Let me teach you 😎😛")
-                    )
+                    );
 
                     parseQuestion(data.data.questions[0]).map((message) =>
                       newMessage(message)
@@ -191,6 +193,10 @@ class WebViewPanel {
     );
     const stylesUri = this._panel.webview.asWebviewUri(stylesPathOnDisk);
 
-    return view({ stylesUri, messages, scriptUri });
+    const vs2015 = this._panel.webview.asWebviewUri(
+      vscode.Uri.file(path.join(this._extensionPath, "media", "vs2015.css"))
+    );
+
+    return view({ stylesUri, messages, scriptUri, vs2015 });
   }
 }

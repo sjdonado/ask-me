@@ -12,13 +12,19 @@ export default ({
   stylesUri,
   messages,
   scriptUri,
+  vs2015,
 }: {
   stylesUri: Uri;
   messages: Array<Message>;
   scriptUri: Uri;
+  vs2015: Uri;
 }) => {
   const messagesComponents = messages
     .map((message) => message.toHtml())
+    .map((r) => {
+      console.log(r);
+      return r;
+    })
     .join("");
 
   return `<!DOCTYPE html>
@@ -28,6 +34,8 @@ export default ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Ask me 🤖</title>
       <link rel="stylesheet" type="text/css" href="${stylesUri}">
+      <link rel="stylesheet" type="text/css" href="${vs2015}">
+      <link rel="stylesheet" href="https://cdn.plyr.io/3.6.2/plyr.css" />
       <script src="https://unpkg.com/complex-js@5.0.0/dst/complex.min.js"></script>
   </head>
   <body>
@@ -43,6 +51,7 @@ export default ({
           </form>
       </div>
       <script src="${scriptUri}"></script>
+      <script src="https://cdn.plyr.io/3.6.2/plyr.js"></script>
   </body>
   </html>`;
 };
