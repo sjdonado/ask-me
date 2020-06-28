@@ -32,8 +32,8 @@ export default ({
   </head>
   <body>
       <div class="header">
-          <h1>Welcome to Ask me 🤖</h1>
-          <span>Ask me about code fundamentals</span>
+          <h1>Ask me 🤖</h1>
+          <h4>Your smart assistant for coding</h4>
       </div>
       <div class="container">
           <div id="chat">${messagesComponents}</div>
