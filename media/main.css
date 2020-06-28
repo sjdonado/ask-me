@@ -1,7 +1,7 @@
 :root {
   --textPrimaryColor: rgba(255, 255, 255, 0.58);
   --textSecondaryColor: rgba(249, 249, 250, 0.886);
-  --primaryColor: #2f80ed;
+  --primaryColor: rgb(59, 136, 253);
 }
 
 .header {
@@ -30,6 +30,8 @@
 }
 
 #chat > .message {
+  display: flex;
+  flex-direction: column;
   padding: 6px 12px;
   margin-bottom: 6px;
   max-width: 300px;
@@ -37,14 +39,10 @@
 }
 
 #chat > .message > .time {
-  width: 100%;
-  position: relative;
-  text-align: right;
-
-  bottom: 0;
-
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.58);
+  align-self: flex-end;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--textPrimaryColor);
 }
 
 .sent {

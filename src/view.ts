@@ -35,7 +35,7 @@ export default ({
       <div class="container">
           <div id="chat">${messagesComponents}</div>
           <form class="question-form" onsubmit="send()">
-              <input id="question" type="text" placeholder="Type your question">
+              <input id="question" type="text" placeholder="Type your question...">
               <button type="submit">Send</button>
           </form>
       </div>

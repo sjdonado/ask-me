@@ -16,3 +16,9 @@ export interface Question {
   tags: Array<Tag>;
   information: any;
 }
+
+export interface Response {
+  data: {
+    questions: Array<Question>;
+  };
+}
