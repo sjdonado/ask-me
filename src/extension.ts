@@ -19,9 +19,9 @@ import {
 import { parseQuestion } from "./utils";
 
 const languages = {
-  "Auto": "auto",
-  "Python": "py",
-  "Javascript": "js"
+  Auto: "auto",
+  Python: "py",
+  Javascript: "js",
 };
 
 const types = [
