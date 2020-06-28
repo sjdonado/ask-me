@@ -1,5 +1,7 @@
 # Welcome to Ask me 🤖
+
 > Your smart assistant for coding
+
 <div align="center">
     <a href="https://marketplace.visualstudio.com/items?itemName=ksm.ask-me">
         <img src="demo.gif" alt="Ask me" width="800px" />
@@ -9,14 +11,17 @@
 Made with ❤️ for #VSCodeHackathon 2020
 
 ## Microservices
-- Api base: https://ask-me-api.herokuapp.com (Fetch question data)
+
+- API base (repo [here](https://github.com/krthr/ask-me-api)): https://ask-me-api.herokuapp.com (Fetch question data)
 - Math.js: http://api.mathjs.org/v4/
 - NLP API: https://simple-bot-hackaton.herokuapp.com/bot-response
 
 ## How to run?
+
 Run `npm install` and go!
 
 ## Contributors
+
 <table>
   <tr>
     <td align="center">
