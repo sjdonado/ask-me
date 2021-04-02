@@ -63,7 +63,7 @@
 		"vscode-test": "^1.3.0"
 	},
 	"dependencies": {
-		"axios": "^0.19.2",
+		"axios": "^0.21.1",
 		"graphql": "^14.0.0",
 		"graphql-tag": "^2.10.3",
 		"highlight.js": "^10.4.1",
